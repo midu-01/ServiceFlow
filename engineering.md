@@ -98,3 +98,23 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
   - Engineered strongly-typed client API abstraction (`frontend/src/lib/api/client.ts`) with custom `ApiClientError` and automated bearer token injection.
   - Built responsive base layout (`frontend/src/app/layout.tsx`) and operational verification view (`frontend/src/app/page.tsx`).
   - Verified static compilation with `next build` and strict type checks with `tsc --noEmit` (zero errors).
+
+### Phase 5: Docker Compose and Local Infrastructure
+- [x] **Containerized Backend (`backend/Dockerfile`):**
+  - Multi-stage build on `python:3.12-slim`.
+  - Enforced security best practice by provisioning a non-root `appuser` (UID 10001).
+  - Pre-installed runtime system dependencies (`curl` for healthcheck, `libpq` for PostgreSQL).
+  - Can serve both API server (`uvicorn`) and background worker (`celery`) from a single container image.
+- [x] **Containerized Frontend (`frontend/Dockerfile`):**
+  - Built on `node:20-alpine` with deterministic `npm ci`.
+  - Configured for hot-reloading in containerized local environments.
+- [x] **Orchestration Topology (`docker-compose.yml`):**
+  - Declared 5 coordinated services: `postgres` (16-alpine), `redis` (7-alpine), `api` (FastAPI), `worker` (Celery), and `frontend` (Next.js).
+  - Established deterministic dependency chains using active health checks:
+    - `api` and `worker` depend on `postgres` (`service_healthy`) and `redis` (`service_healthy`).
+    - `frontend` depends on `api` (`service_healthy`).
+  - Isolated database persistence via named Docker volume `serviceflow_postgres_data` and Redis state via `serviceflow_redis_data`.
+  - Dedicated bridge network `serviceflow_network`.
+- [x] **Environment Configuration Baseline:**
+  - Consolidated root `.env.example` defining all application, database, broker, security, and port settings.
+  - Validated compose syntax and variable resolution with `docker compose config`.
