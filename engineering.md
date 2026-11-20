@@ -259,3 +259,22 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
   - Tested rejection of unauthorized origin (code 1008).
   - Tested role-filtered event distribution: verified supervisor receives all events while operators are strictly shielded from other operators' events.
   - Entire backend test suite grew to 30 unit tests passing cleanly.
+
+### Phase 12: Frontend Foundation and Design System
+- [x] **Accessible UI Component Library (`frontend/src/components/ui/`):**
+  - Engineered component suite following shadcn/Tailwind design tokens:
+    - `Button`: Multiple variants (`default`, `destructive`, `outline`, `secondary`, `ghost`, `link`), sizes, and accessible loading spinner state (`isLoading`).
+    - `Input` & `Textarea`: Form controls with field validation error messaging and focus ring styling.
+    - `Card`: Composable structural primitives (`Card`, `CardHeader`, `CardTitle`, `CardDescription`, `CardContent`, `CardFooter`).
+    - `Badge`: Semantic pill badges.
+    - `StatusBadge`: Purpose-built component mapping `RequestStatus` (`QUEUED`, `PROCESSING`, `COMPLETED`, `FAILED`, `CANCELLED`) with matching Lucide icons, status-specific palettes, and animated spinners.
+    - `Progress`: Smoothly animated progress bar indicator with percentage readouts.
+    - `Alert`: Accessible notification banners (`default`, `success`, `warning`, `destructive`).
+    - `Dialog`: Accessible modal dialog with focus management, backdrop blur, escape-key listener, and action buttons.
+- [x] **Application Layout & Navigation (`frontend/src/components/layout/navbar.tsx`):**
+  - Built sticky navigation header with brand iconography, live WebSocket sync beacon, role badge display, and dynamic navigation links (`Dashboard`, `Service Requests`, `New Request`).
+  - Integrated into root `layout.tsx`.
+- [x] **TanStack Query Key Factory (`frontend/src/lib/api/query-keys.ts`):**
+  - Centralized hierarchical query keys for auth (`authKeys`) and service requests (`requestKeys.all`, `requestKeys.list(filters)`, `requestKeys.detail(id)`).
+- [x] **Static Compilation & Type Verification:**
+  - Verified Next.js 15 production build (`next build`) and strict TypeScript checks (`tsc --noEmit`) with 0 errors.
