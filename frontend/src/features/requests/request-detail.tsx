@@ -179,12 +179,12 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
 
         <CardContent className="space-y-6 pt-6">
           {/* Progress Section */}
-          <div className="p-4 rounded-xl border border-border bg-card space-y-3">
+          <div className="p-5 rounded-xl border border-border bg-card space-y-4">
             <div className="flex justify-between items-center text-xs">
               <span className="font-semibold uppercase tracking-wider text-muted-foreground">
                 Execution Progress
               </span>
-              <span className="font-bold text-sm text-foreground">{sr.progress_percent}%</span>
+              <span className="font-bold text-sm text-foreground font-mono">{sr.progress_percent}%</span>
             </div>
 
             <Progress
@@ -199,11 +199,55 @@ export function RequestDetail({ requestId }: RequestDetailProps) {
               className="h-3"
             />
 
-            <div className="text-xs text-muted-foreground flex items-center gap-1.5">
+            <div className="text-xs text-muted-foreground flex items-center gap-1.5 pb-2 border-b border-border">
               <span className="opacity-70">Current Step:</span>
               <span className="font-medium text-foreground">
                 {sr.current_step || (sr.status === "QUEUED" ? "Awaiting worker pickup" : "Finished")}
               </span>
+            </div>
+
+            {/* Visual Multi-Step Timeline */}
+            <div className="space-y-2 pt-1">
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground opacity-70 block">
+                Pipeline Milestones
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-5 gap-2 text-xs">
+                {[
+                  { step: 1, label: "Validation", progress: 20 },
+                  { step: 2, label: "Environment", progress: 40 },
+                  { step: 3, label: "Execution", progress: 60 },
+                  { step: 4, label: "Verification", progress: 80 },
+                  { step: 5, label: "Finalization", progress: 100 },
+                ].map((s) => {
+                  const isDone = sr.status === "COMPLETED" || sr.progress_percent >= s.progress;
+                  const isCurrent = sr.status === "PROCESSING" && sr.progress_percent < s.progress && sr.progress_percent >= s.progress - 20;
+
+                  return (
+                    <div
+                      key={s.step}
+                      className={cn(
+                        "p-2.5 rounded-lg border text-center transition-all",
+                        isDone
+                          ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-400 font-medium"
+                          : isCurrent
+                          ? "bg-blue-500/10 border-blue-500/40 text-blue-700 dark:text-blue-300 font-semibold shadow-sm"
+                          : "bg-background border-border text-muted-foreground opacity-50"
+                      )}
+                    >
+                      <div className="flex items-center justify-center gap-1 text-[11px] mb-0.5">
+                        {isDone ? (
+                          <Check className="h-3 w-3 text-emerald-600 dark:text-emerald-400" />
+                        ) : isCurrent ? (
+                          <Loader2 className="h-3 w-3 animate-spin text-blue-600" />
+                        ) : (
+                          <span className="font-mono text-[10px]">#{s.step}</span>
+                        )}
+                      </div>
+                      <div className="truncate text-[11px]">{s.label}</div>
+                    </div>
+                  );
+                })}
+              </div>
             </div>
           </div>
 

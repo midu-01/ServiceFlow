@@ -289,7 +289,7 @@ export function RequestList() {
                           </div>
                         </td>
 
-                        <td className="py-3.5 px-4 text-xs text-muted-foreground whitespace-nowrap">
+                        <td className="py-3.5 px-4 text-xs text-muted-foreground whitespace-nowrap font-mono tabular-nums">
                           {formattedDate}
                         </td>
 

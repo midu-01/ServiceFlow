@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { Lock, LogIn, User, Sparkles } from "lucide-react";
+import { Eye, EyeOff, Lock, LogIn, User, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
@@ -22,6 +22,7 @@ export function LoginForm() {
   const { login } = useAuth();
   const [serverError, setServerError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -93,13 +94,24 @@ export function LoginForm() {
           <label className="block text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-1">
             Password
           </label>
-          <Input
-            type="password"
-            placeholder="••••••••"
-            autoComplete="current-password"
-            error={errors.password?.message}
-            {...register("password")}
-          />
+          <div className="relative">
+            <Input
+              type={showPassword ? "text" : "password"}
+              placeholder="••••••••"
+              autoComplete="current-password"
+              error={errors.password?.message}
+              className="pr-10"
+              {...register("password")}
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="absolute right-3 top-2.5 text-muted-foreground opacity-60 hover:opacity-100 transition-opacity focus:outline-none"
+              title={showPassword ? "Hide password" : "Show password"}
+            >
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
         </div>
 
         <Button type="submit" className="w-full gap-2 mt-2" isLoading={isSubmitting}>
