@@ -5,7 +5,7 @@ This document tracks the phased implementation of ServiceFlow.
 ## Phase Checklist
 
 - [x] **Phase 1:** Project Initialization and Baseline Setup
-- [ ] **Phase 2:** Requirements Analysis and Business Workflow
+- [x] **Phase 2:** Requirements Analysis and Business Workflow
 - [ ] **Phase 3:** Architecture and Technical Contracts
 - [ ] **Phase 4:** Frontend and Backend Project Skeletons
 - [ ] **Phase 5:** Docker Compose and Local Infrastructure
@@ -25,8 +25,9 @@ This document tracks the phased implementation of ServiceFlow.
 
 ---
 
-## Current Status: Phase 1 Complete
+## Current Status: Phase 2 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Directory Structure:** `frontend/`, `backend/`, `docs/` created.
-* **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` established.
+* **Requirements Specification:** `docs/requirements.md` approved with REQ-001 through REQ-012, NFR-001 through NFR-007, permission matrix, and lifecycle FSM.
+* **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.

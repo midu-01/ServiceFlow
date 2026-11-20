@@ -58,4 +58,14 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] Added `docs/progress.md` tracking the 18-phase implementation roadmap.
 - [x] Connected and synchronized with remote repository: `https://github.com/midu-01/ServiceFlow.git`.
 
-*(New phases and architectural milestones will be documented here chronologically as they are implemented.)*
+### Phase 2: Requirements Analysis & Business Workflow
+- [x] Formalized system problem statement and core business objectives in `docs/requirements.md`.
+- [x] Defined granular user personas and complete Permission Matrix for **Operator**, **Supervisor**, and **Admin**.
+- [x] Designed the finite state machine (FSM) for service request lifecycles (`QUEUED` $\to$ `PROCESSING` $\to$ `COMPLETED` / `FAILED` / `CANCELLED`).
+- [x] Codified strict state transition invariants:
+  - Cancellation is restricted exclusively to requests in `QUEUED` state.
+  - Transitioning from `PROCESSING` to `CANCELLED` is blocked with `409 Conflict`.
+  - Worker tasks enforce idempotency before beginning workload execution.
+- [x] Specified testable functional requirements (`REQ-001` through `REQ-012`) with explicit Given-When-Then acceptance criteria.
+- [x] Defined measurable non-functional targets (`NFR-001` through `NFR-007`) for latency ($< 100\text{ ms}$ REST, $< 250\text{ ms}$ WS event distribution), concurrency, reliability, and security.
+- [x] Created a full Requirements Traceability Matrix mapping each requirement to its delivery phase.
