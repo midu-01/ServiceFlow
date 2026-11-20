@@ -299,3 +299,33 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] **Production Build Verification:**
   - `npm run type-check` (0 errors).
   - `npm run build` generated static routes for `/login` and `/dashboard` cleanly in 2.6s.
+
+### Phase 14: Request Creation, List, Detail and Cancellation UI
+- [x] **Request Creation Module (`/requests/new`):**
+  - Built `RequestCreateForm` with real-time Zod validation:
+    - Title character limit enforcement (3–100 chars) with live counter.
+    - Description limit enforcement (10–1000 chars) with live counter.
+  - Added preset scenario templates ("Database Vacuum & Index", "Customer Order Sync", "Audit Telemetry Export") to facilitate rapid testing and demonstration.
+  - On submission: commits request, invalidates query cache, and smoothly redirects to the created detail view.
+- [x] **Request Queue List View (`/requests`):**
+  - Engineered filter toolbar featuring:
+    - Debounced full-text search input with clear trigger.
+    - Status pill tabs (`All`, `Queued`, `Processing`, `Completed`, `Failed`, `Cancelled`).
+    - Manual refresh control with animated fetch spinner.
+  - Built responsive data table featuring:
+    - Semantic `StatusBadge` matching lifecycle states.
+    - Micro progress bar with active step label.
+    - Contextual action triggers ("View Details", "Cancel" for queued items).
+  - Clean empty state with search reset and new request submission CTAs.
+  - Complete pagination controls (`Previous`, `Page X of Y`, `Next`).
+- [x] **Request Detail & Execution Inspection (`/requests/[id]`):**
+  - Full entity overview: Title, copyable UUID, StatusBadge, Workload Description.
+  - Prominent execution progress card: animated progress bar, percentage readout, and current step milestone.
+  - Failure alert banner rendering sanitized error explanation when status is `FAILED`.
+  - Timestamp breakdown: `Submitted`, `Started`, `Completed`, `Cancelled`.
+- [x] **Atomic Cancellation Modal (`cancel-dialog.tsx`):**
+  - Integrated accessible confirmation modal with focus trap and escape-key handling.
+  - Prevents accidental cancellations while communicating lifecycle constraints (only `QUEUED` items are cancellable).
+- [x] **Frontend Craft & Build Verification:**
+  - Applied `unslop` and `ui-ux-pro-max` guidelines: quiet neutral chrome, 4px grid rhythm, high contrast ratios, zero emojis in structural controls, and responsive layouts.
+  - `npm run type-check` (0 errors) and `npm run build` (all 8 static/dynamic routes compiled cleanly in 2.6s).

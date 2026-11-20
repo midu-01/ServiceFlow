@@ -17,7 +17,7 @@ This document tracks the phased implementation of ServiceFlow.
 - [x] **Phase 11:** Redis Pub/Sub and Native WebSocket Communication
 - [x] **Phase 12:** Frontend Foundation and Design System
 - [x] **Phase 13:** Login, Session Handling and Role-Aware Navigation
-- [ ] **Phase 14:** Request Creation, List, Detail and Cancellation UI
+- [x] **Phase 14:** Request Creation, List, Detail and Cancellation UI
 - [ ] **Phase 15:** Frontend WebSocket Integration and Live Dashboard
 - [ ] **Phase 16:** Integration, Security and Failure Handling
 - [ ] **Phase 17:** Verification and Acceptance Testing
@@ -25,17 +25,19 @@ This document tracks the phased implementation of ServiceFlow.
 
 ---
 
-## Current Status: Phase 13 Complete
+## Current Status: Phase 14 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Requirements Specification:** `docs/requirements.md` approved.
 * **Technical Contracts & Architecture:** `docs/architecture.md`, `docs/api.md`, `docs/websocket-events.md` established.
-* **Backend Core, Concurrency & Real-Time:** Full backend operational (REST API, Celery worker pool, WebSockets).
-* **Frontend Design System & Authentication:**
-  - `AuthProvider` and `useAuth` hook with TanStack Query session hydration.
-  - Zod-validated `LoginForm` with demo credential shortcuts.
-  - Centered responsive `/login` route.
-  - Route protection wrapper `ProtectedRoute` and authenticated `/dashboard` view.
-  - Role-aware `Navbar` navigation.
-  - Build verified with 0 errors (`npm run build`).
+* **Backend Engine:** Complete REST API, Celery background worker concurrency, and WebSocket pub/sub stream.
+* **Frontend Application Features:**
+  - Authentication: `AuthProvider`, Zod-validated `LoginForm`, `/login`, and `ProtectedRoute`.
+  - Service Requests:
+    * `/requests/new`: Form with live character counters and preset scenarios.
+    * `/requests`: Paginated queue list with debounced search, status filter pills, and table/card presentation.
+    * `/requests/[id]`: Detailed view with animated execution progress bar, current step, failure alert, and timestamps.
+    * `CancelDialog`: Accessible confirmation modal with atomic cancellation protection.
+  - UI Craftsmanship: Adheres to `unslop` and `ui-ux-pro-max` guidelines (quiet neutral chrome, 4px grid rhythm, zero emoji clutter, semantic status tokens).
+  - Production build: `npm run build` compiled 8 routes with 0 errors.
 * **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.
