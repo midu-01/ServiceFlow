@@ -234,3 +234,28 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
   - Tested non-existent ID handling.
   - Tested concurrent execution of 4 simultaneous requests running in parallel with isolated sessions without deadlocks.
   - Total unit tests grew to 26 tests, all passing cleanly.
+
+### Phase 11: Redis Pub/Sub and Native WebSocket Communication
+- [x] **Native WebSocket Endpoint (`app/api/v1/endpoints/websocket.py`):**
+  - Implemented `/api/v1/ws/service-requests` with full-duplex communication.
+  - Handshake security: validates client `Origin` against allowed frontend whitelist.
+  - Authenticates connection before acceptance: decodes JWT token from query parameter (`?token=...`) or HttpOnly cookie (`serviceflow_access_token`) and validates user account active status in PostgreSQL.
+  - Rejects unauthorized or forged attempts with WebSocket policy violation code `1008`.
+  - Dispatches `connection.ready` handshake frame upon successful registration.
+  - Listens for client keepalive `ping` text frames and responds with `pong`.
+- [x] **Server-Side Authorization & Permission Filtering (`app/realtime/manager.py`):**
+  - Enhanced `ConnectionManager` with structured `ClientConnection` tracking `user_id` and authoritative `UserRole`.
+  - Implemented zero-overhead permission filtering:
+    - Supervisors and Admins receive all service request events across the entire organization.
+    - Operators receive only events matching their own `created_by_id`.
+  - Dead socket pruning: automatically purges broken or abruptly dropped sockets without blocking other active connections.
+- [x] **Resilient Redis Pub/Sub Subscriber (`app/realtime/subscriber.py`):**
+  - Long-running async task managed via FastAPI lifespan context.
+  - Subscribes to channel `service_flow:events`.
+  - Implemented exponential reconnection backoff (up to 30s) handling Redis broker restarts or network interruptions gracefully.
+- [x] **Automated WebSocket Test Suite (`backend/tests/unit/test_websocket.py`):**
+  - Tested connection handshake, `connection.ready` reception, and ping/pong heartbeat.
+  - Tested rejection of invalid token (code 1008).
+  - Tested rejection of unauthorized origin (code 1008).
+  - Tested role-filtered event distribution: verified supervisor receives all events while operators are strictly shielded from other operators' events.
+  - Entire backend test suite grew to 30 unit tests passing cleanly.

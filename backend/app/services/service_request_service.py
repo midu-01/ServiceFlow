@@ -132,6 +132,7 @@ class ServiceRequestService:
             "data": {
                 "status": RequestStatus.CANCELLED.value,
                 "progress_percent": 0,
+                "created_by_id": str(updated_sr.created_by_id),
                 "cancelled_at": updated_sr.cancelled_at.isoformat() if updated_sr.cancelled_at else None,
             },
         }

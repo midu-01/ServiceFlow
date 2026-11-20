@@ -73,6 +73,7 @@ async def run_service_request_pipeline(
                 "status": RequestStatus.PROCESSING.value,
                 "progress_percent": 0,
                 "current_step": "Starting processing pipeline",
+                "created_by_id": str(sr.created_by_id),
                 "started_at": sr.started_at.isoformat() if sr.started_at else None,
             },
         })
@@ -109,6 +110,7 @@ async def run_service_request_pipeline(
                             "status": RequestStatus.PROCESSING.value,
                             "progress_percent": target_progress,
                             "current_step": step_label,
+                            "created_by_id": str(sr.created_by_id),
                         },
                     })
 
@@ -123,6 +125,7 @@ async def run_service_request_pipeline(
                     "status": RequestStatus.COMPLETED.value,
                     "progress_percent": 100,
                     "current_step": PROCESSING_STEPS[-1][1],
+                    "created_by_id": str(sr.created_by_id),
                     "completed_at": sr.completed_at.isoformat() if sr.completed_at else None,
                 },
             })
@@ -148,6 +151,7 @@ async def run_service_request_pipeline(
                     "progress_percent": failed_sr.progress_percent,
                     "current_step": "Processing failed",
                     "error_message": safe_error_msg,
+                    "created_by_id": str(sr.created_by_id) if sr else None,
                 },
             })
             return failed_sr
