@@ -141,3 +141,23 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] **Automated Testing (`backend/tests/unit/test_models.py`):**
   - Tested table metadata registration and async database persistence with in-memory SQLite (`aiosqlite`).
   - Verified relationship back-population and foreign key integrity.
+
+### Phase 7: Backend Core, Configuration and Error Handling
+- [x] **Production-Safe Configuration Validation:**
+  - Strengthened `Settings` in `app/core/config.py` with Pydantic model validator enforcing strong 32+ character secrets and disabling debug mode when running in production.
+- [x] **Request Correlation & Structured Logging:**
+  - Implemented `request_correlation_middleware` in `app/main.py` utilizing Python `contextvars`.
+  - Injected `X-Request-ID` across HTTP response headers and into every structured log line (`CorrelationIdFilter`).
+  - Added request execution duration instrumentation (`time.perf_counter()`).
+- [x] **Robust Global Error Handling Strategy:**
+  - Extended exception hierarchy in `app/core/errors.py`: `AppError`, `NotFoundError` (404), `ConflictError` (409), `UnauthorizedError` (401), `ForbiddenError` (403), `ValidationError` (422).
+  - Implemented `generic_exception_handler` capturing unhandled 500 exceptions, logging full diagnostic tracebacks server-side, and returning sanitized error envelopes to clients without stack trace leakage.
+- [x] **Asynchronous Repository Pattern:**
+  - Built generic `BaseRepository[ModelType]` providing type-safe CRUD operations, pagination, and session management.
+  - Implemented `UserRepository` with optimized `get_by_username` and `get_by_email` queries.
+  - Implemented `ServiceRequestRepository` with multi-dimensional filtering (`created_by_id`, `status`, text search) and atomic cancellation (`UPDATE ... WHERE status = 'QUEUED'`).
+  - Created dedicated `get_worker_session()` context manager in `app/db/session.py` to isolate Celery task database sessions from HTTP request loops.
+- [x] **Comprehensive Unit Testing:**
+  - Added `backend/tests/unit/test_errors.py` (error envelopes, 500 sanitization, correlation ID retention).
+  - Added `backend/tests/unit/test_repositories.py` (user lookup, filtered listing, atomic cancellation, progress updates).
+  - Verified 100% passing test suite across all 10 unit tests.

@@ -1,5 +1,6 @@
 from functools import lru_cache
 from typing import List
+from pydantic import model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -38,6 +39,17 @@ class Settings(BaseSettings):
     # Concurrency & Workflows
     CELERY_WORKER_CONCURRENCY: int = 4
     PROCESSING_STEP_DELAY_SECONDS: float = 2.0
+
+    @model_validator(mode="after")
+    def validate_production_configuration(self) -> "Settings":
+        if self.APP_ENV.lower() in ("production", "prod"):
+            if "dev-insecure" in self.APP_SECRET_KEY or len(self.APP_SECRET_KEY) < 32:
+                raise ValueError("APP_SECRET_KEY must be a secure key with at least 32 characters in production.")
+            if "dev-insecure" in self.JWT_SECRET_KEY or len(self.JWT_SECRET_KEY) < 32:
+                raise ValueError("JWT_SECRET_KEY must be a secure key with at least 32 characters in production.")
+            if self.DEBUG:
+                raise ValueError("DEBUG must be disabled in production.")
+        return self
 
 
 @lru_cache

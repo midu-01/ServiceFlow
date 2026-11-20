@@ -1,14 +1,21 @@
 import asyncio
+import time
+import uuid
 from contextlib import asynccontextmanager
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, Response
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.endpoints import health
 from app.api.v1.router import api_v1_router
 from app.core.config import settings
-from app.core.errors import AppError, app_error_handler, validation_error_handler
-from app.core.logging import logger, setup_logging
+from app.core.errors import (
+    AppError,
+    app_error_handler,
+    generic_exception_handler,
+    validation_error_handler,
+)
+from app.core.logging import correlation_id_ctx, logger, setup_logging
 from app.realtime.subscriber import start_event_subscriber
 
 
@@ -38,6 +45,24 @@ def create_app() -> FastAPI:
         lifespan=lifespan,
     )
 
+    # Request ID & Logging Middleware
+    @app.middleware("http")
+    async def request_correlation_middleware(request: Request, call_next) -> Response:
+        req_id = request.headers.get("X-Request-ID") or str(uuid.uuid4())
+        token = correlation_id_ctx.set(req_id)
+        start_time = time.perf_counter()
+
+        try:
+            response: Response = await call_next(request)
+            duration_ms = (time.perf_counter() - start_time) * 1000
+            response.headers["X-Request-ID"] = req_id
+            logger.info(
+                f"{request.method} {request.url.path} completed with {response.status_code} in {duration_ms:.2f}ms"
+            )
+            return response
+        finally:
+            correlation_id_ctx.reset(token)
+
     # CORS Middleware
     app.add_middleware(
         CORSMiddleware,
@@ -50,6 +75,7 @@ def create_app() -> FastAPI:
     # Global Exception Handlers
     app.add_exception_handler(AppError, app_error_handler)
     app.add_exception_handler(RequestValidationError, validation_error_handler)
+    app.add_exception_handler(Exception, generic_exception_handler)
 
     # Root Level Health Probes
     app.include_router(health.router)

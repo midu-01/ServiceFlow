@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from typing import AsyncGenerator
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
 from app.core.config import settings
@@ -20,6 +21,20 @@ AsyncSessionLocal = async_sessionmaker(
 
 
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
+    """Dependency yielding a scoped session per HTTP request."""
+    async with AsyncSessionLocal() as session:
+        try:
+            yield session
+        except Exception:
+            await session.rollback()
+            raise
+        finally:
+            await session.close()
+
+
+@asynccontextmanager
+async def get_worker_session() -> AsyncGenerator[AsyncSession, None]:
+    """Context manager yielding an independent session for Celery worker tasks."""
     async with AsyncSessionLocal() as session:
         try:
             yield session

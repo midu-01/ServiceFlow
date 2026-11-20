@@ -61,6 +61,16 @@ class ForbiddenError(AppError):
         )
 
 
+class ValidationError(AppError):
+    def __init__(self, message: str = "Validation failed", details: Optional[List[Any]] = None):
+        super().__init__(
+            message=message,
+            code="validation_error",
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            details=details,
+        )
+
+
 async def app_error_handler(request: Request, exc: AppError) -> JSONResponse:
     return JSONResponse(
         status_code=exc.status_code,
@@ -90,6 +100,22 @@ async def validation_error_handler(request: Request, exc: RequestValidationError
                 "code": "validation_error",
                 "message": "Request payload validation failed",
                 "details": details,
+            }
+        },
+    )
+
+
+async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    from app.core.logging import logger
+
+    logger.exception(f"Unhandled server error processing {request.method} {request.url.path}: {exc}")
+    return JSONResponse(
+        status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        content={
+            "error": {
+                "code": "internal_error",
+                "message": "An unexpected server error occurred. Please try again later.",
+                "details": [],
             }
         },
     )
