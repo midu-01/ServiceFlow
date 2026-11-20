@@ -185,3 +185,25 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
   - Verified `/me` profile endpoint with both Bearer header and HttpOnly cookie.
   - Verified role-based authorization: operator access denied (403) on supervisor endpoint, supervisor allowed (200).
   - Total test count expanded to 16 unit tests, all passing cleanly.
+
+### Phase 9: Service Request REST API
+- [x] **Service Request Schemas & Contracts (`app/schemas/service_request.py`):**
+  - Designed `ServiceRequestCreate` with strict field validation (`title` 3–100 chars, `description` 10–1000 chars).
+  - Designed `ServiceRequestResponse` exposing entity state, progress, and lifecycle milestones.
+  - Designed `ServiceRequestCancelResponse` indicating termination status and timestamp.
+- [x] **Business Service Layer (`app/services/service_request_service.py`):**
+  - Encapsulated business rules outside of HTTP route handlers.
+  - Controlled request submission: server sets initial `QUEUED` state, 0% progress, creator ID from session token, and timestamps.
+  - Dispatches background Celery task `process_service_request.delay(request_id)` upon commit.
+  - Emits real-time `service_request.created` event via Redis Pub/Sub.
+  - Enforced strict role-scoping: Operators only receive their own requests; Supervisors and Admins view global queue.
+  - Enforced ownership verification on detail inspection: non-owners receive `403 Forbidden`.
+  - Implemented atomic cancellation guard: only requests in `QUEUED` state can be cancelled; in-flight (`PROCESSING`) or terminal requests reject with `409 Conflict`.
+- [x] **REST Endpoints (`app/api/v1/endpoints/service_requests.py`):**
+  - `POST /api/v1/service-requests`: 201 Created with `Location` header.
+  - `GET /api/v1/service-requests`: Paginated response (`meta` with `total`, `limit`, `offset`, `total_pages`, `current_page`) with `status` and `search` query filters.
+  - `GET /api/v1/service-requests/{id}`: Detail view with ownership checks.
+  - `POST /api/v1/service-requests/{id}/cancel`: Atomic state cancellation.
+- [x] **Automated Test Suite Expansion (`backend/tests/unit/test_service_requests.py`):**
+  - Validated submission (201 Created), validation errors (422), role scoping in listings, query filtering, detail view permissions (403), 404 handling, and atomic cancellation (409 on processing).
+  - Test suite grew to 22 unit tests passing in $< 22\text{ s}$.

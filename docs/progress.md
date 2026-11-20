@@ -12,7 +12,7 @@ This document tracks the phased implementation of ServiceFlow.
 - [x] **Phase 6:** Database Design and Migrations
 - [x] **Phase 7:** Backend Core, Configuration and Error Handling
 - [x] **Phase 8:** JWT Authentication and Role-Based Access Control
-- [ ] **Phase 9:** Service Request REST API
+- [x] **Phase 9:** Service Request REST API
 - [ ] **Phase 10:** Background Processing and Concurrency with Celery
 - [ ] **Phase 11:** Redis Pub/Sub and Native WebSocket Communication
 - [ ] **Phase 12:** Frontend Foundation and Design System
@@ -25,17 +25,17 @@ This document tracks the phased implementation of ServiceFlow.
 
 ---
 
-## Current Status: Phase 8 Complete
+## Current Status: Phase 9 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Requirements Specification:** `docs/requirements.md` approved.
 * **Technical Contracts & Architecture:** `docs/architecture.md`, `docs/api.md`, `docs/websocket-events.md` established.
-* **Backend Core & Database:** Models, Alembic migrations, logging, error handling, repositories, and worker session contexts implemented.
-* **Authentication & RBAC:**
-  - Argon2id password hashing and constant-time verification.
-  - JWT tokens with dual transport (Authorization Bearer header + HttpOnly cookie).
-  - Server-side role resolution (`require_role`) across Operator, Supervisor, and Admin.
-  - Endpoints `POST /auth/login`, `GET /auth/me`, `POST /auth/logout` active.
-  - Idempotent seed script `backend/scripts/seed_users.py`.
-  - Comprehensive unit test suite (16 tests passed in 1.11s).
+* **Backend Core & Database:** Models, migrations, repositories, and error handlers active.
+* **Authentication & RBAC:** Argon2id, JWT, and role protection active.
+* **Service Request REST API:**
+  - `POST /api/v1/service-requests`: Validates payload, commits entity in `QUEUED` state, dispatches background task.
+  - `GET /api/v1/service-requests`: Role-scoped pagination with `status` and `search` filters.
+  - `GET /api/v1/service-requests/{id}`: Detailed inspection with operator ownership enforcement (403 for non-owners).
+  - `POST /api/v1/service-requests/{id}/cancel`: Atomic state cancellation guard (409 Conflict if not QUEUED).
+  - Comprehensive unit test suite (22 tests passed in 21s).
 * **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.
