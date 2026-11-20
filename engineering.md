@@ -207,3 +207,30 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] **Automated Test Suite Expansion (`backend/tests/unit/test_service_requests.py`):**
   - Validated submission (201 Created), validation errors (422), role scoping in listings, query filtering, detail view permissions (403), 404 handling, and atomic cancellation (409 on processing).
   - Test suite grew to 22 unit tests passing in $< 22\text{ s}$.
+
+### Phase 10: Background Processing and Concurrency with Celery
+- [x] **Asynchronous Celery Architecture & Worker Tuning:**
+  - Configured Celery worker with `worker_prefetch_multiplier = 1` for fair dispatch across long-running workloads, preventing task starvation.
+  - Enabled late task acknowledgment (`task_acks_late = True`) guaranteeing that crashed or terminated worker tasks are re-queued rather than lost.
+  - Enabled task auto-discovery (`celery_app.autodiscover_tasks(["app.workers.tasks"])`).
+- [x] **Multi-Step Processing Simulation Pipeline (`app/workers/tasks/request_tasks.py`):**
+  - Implemented 5-step discrete workflow:
+    1. Precondition validation (20%)
+    2. Environment preparation (40%)
+    3. Multi-stage service workload (60%)
+    4. Operational constraint verification (80%)
+    5. Final result commitment (100%)
+  - Parameterized discrete step delays via `settings.PROCESSING_STEP_DELAY_SECONDS`.
+  - Transactionally commits step progress to PostgreSQL and broadcasts `service_request.progress_updated` events via Redis Pub/Sub.
+- [x] **Concurrency & Race-Condition Guards:**
+  - **Pre-Execution Check:** Verifies request status before starting. If pre-cancelled, the task exits cleanly without transitioning to `PROCESSING`.
+  - **In-Flight Cancellation Detection:** Polls database state at each step; if an operator/supervisor cancels the request while the worker is between steps, the pipeline aborts immediately.
+  - **Worker Session Scoping:** Instantiates independent database sessions per task via `get_worker_session()`, strictly avoiding cross-coroutine transaction collisions.
+- [x] **Resilience & Sanitized Failure Handling:**
+  - Traps step exceptions, records sanitized user-facing error message in PostgreSQL, sets status to `FAILED`, and broadcasts `service_request.failed` event while preserving full debug stack traces server-side.
+- [x] **Automated Concurrency Testing (`backend/tests/unit/test_worker_tasks.py`):**
+  - Tested normal pipeline completion (`QUEUED` $\to$ `PROCESSING` $\to$ `COMPLETED`, 100% progress).
+  - Tested pre-cancellation idempotency guard.
+  - Tested non-existent ID handling.
+  - Tested concurrent execution of 4 simultaneous requests running in parallel with isolated sessions without deadlocks.
+  - Total unit tests grew to 26 tests, all passing cleanly.

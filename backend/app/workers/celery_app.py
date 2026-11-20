@@ -17,3 +17,5 @@ celery_app.conf.update(
     task_acks_late=True,
     worker_concurrency=settings.CELERY_WORKER_CONCURRENCY,
 )
+
+celery_app.autodiscover_tasks(["app.workers.tasks"])

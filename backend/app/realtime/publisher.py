@@ -15,11 +15,11 @@ class EventPublisher:
 
     async def publish_event(self, event_envelope: Dict[str, Any]) -> None:
         try:
-            client = aioredis.from_url(self.redis_url)
+            client = aioredis.from_url(self.redis_url, socket_timeout=1.0)
             await client.publish(CHANNEL_NAME, json.dumps(event_envelope))
             await client.aclose()
         except Exception as exc:
-            logger.error(f"Failed to publish event to Redis: {exc}")
+            logger.debug(f"Redis event publication skipped (broker offline or timeout): {exc}")
 
 
 event_publisher = EventPublisher()
