@@ -11,7 +11,7 @@ This document tracks the phased implementation of ServiceFlow.
 - [x] **Phase 5:** Docker Compose and Local Infrastructure
 - [x] **Phase 6:** Database Design and Migrations
 - [x] **Phase 7:** Backend Core, Configuration and Error Handling
-- [ ] **Phase 8:** JWT Authentication and Role-Based Access Control
+- [x] **Phase 8:** JWT Authentication and Role-Based Access Control
 - [ ] **Phase 9:** Service Request REST API
 - [ ] **Phase 10:** Background Processing and Concurrency with Celery
 - [ ] **Phase 11:** Redis Pub/Sub and Native WebSocket Communication
@@ -25,19 +25,17 @@ This document tracks the phased implementation of ServiceFlow.
 
 ---
 
-## Current Status: Phase 7 Complete
+## Current Status: Phase 8 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Requirements Specification:** `docs/requirements.md` approved.
 * **Technical Contracts & Architecture:** `docs/architecture.md`, `docs/api.md`, `docs/websocket-events.md` established.
-* **Backend & Frontend Skeletons:** Implemented, compiled, and unit tested.
-* **Infrastructure & Containerization:** Docker Compose and Dockerfiles validated.
-* **Database Models & Migrations:** `User` and `ServiceRequest` models + Alembic migrations.
-* **Backend Core & Error Handling:**
-  - Request correlation ID middleware (`X-Request-ID`) and structured logging.
-  - Global error handlers with sanitized 500 error envelopes.
-  - Production configuration validator.
-  - Generic and domain repositories (`BaseRepository`, `UserRepository`, `ServiceRequestRepository`) with atomic cancellation logic.
-  - Dedicated worker session context manager (`get_worker_session`).
-  - Unit tests: 10 passed in 0.62s.
+* **Backend Core & Database:** Models, Alembic migrations, logging, error handling, repositories, and worker session contexts implemented.
+* **Authentication & RBAC:**
+  - Argon2id password hashing and constant-time verification.
+  - JWT tokens with dual transport (Authorization Bearer header + HttpOnly cookie).
+  - Server-side role resolution (`require_role`) across Operator, Supervisor, and Admin.
+  - Endpoints `POST /auth/login`, `GET /auth/me`, `POST /auth/logout` active.
+  - Idempotent seed script `backend/scripts/seed_users.py`.
+  - Comprehensive unit test suite (16 tests passed in 1.11s).
 * **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.

@@ -161,3 +161,27 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
   - Added `backend/tests/unit/test_errors.py` (error envelopes, 500 sanitization, correlation ID retention).
   - Added `backend/tests/unit/test_repositories.py` (user lookup, filtered listing, atomic cancellation, progress updates).
   - Verified 100% passing test suite across all 10 unit tests.
+
+### Phase 8: JWT Authentication and Role-Based Access Control
+- [x] **Argon2id Password Security:**
+  - Configured memory-hard password hashing via `argon2-cffi` (`time_cost=2`, `memory_cost=19MiB`, `parallelism=1`).
+  - Implemented constant-time password verification preventing timing attack vectors.
+  - Implemented generic credential failure error handling ("Invalid username or password") to avoid user enumeration.
+- [x] **Stateless JWT Tokens with Dual Transport:**
+  - Authored token generation and validation in `app/core/security.py` using HMAC-SHA256 (`HS256`).
+  - Built support for both standard `Authorization: Bearer <token>` headers and secure `serviceflow_access_token` cookies (`HttpOnly`, `SameSite=Lax`, `Secure` in non-dev).
+- [x] **Server-Side Role-Based Access Control (RBAC):**
+  - Engineered `CurrentUserDep` (`get_current_user`) resolving user entity dynamically from PostgreSQL by token `sub` (UUID).
+  - Enforced account status check (`user.is_active` rejects inactive accounts with HTTP 403 Forbidden).
+  - Implemented `require_role(*allowed_roles)` dependency inspecting authoritative database role rather than client claims.
+- [x] **Authentication Endpoints (`app/api/v1/endpoints/auth.py`):**
+  - `POST /api/v1/auth/login`: Authenticates credentials, sets HttpOnly cookie, returns `TokenData` response.
+  - `GET /api/v1/auth/me`: Resolves profile of authenticated caller.
+  - `POST /api/v1/auth/logout`: Clears session cookie.
+- [x] **Idempotent User Seeding Script (`scripts/seed_users.py`):**
+  - Created executable script generating default `admin`, `supervisor`, and `operator` credentials safely from environment variables or secure defaults.
+- [x] **Automated Authentication Test Suite (`backend/tests/unit/test_auth.py`):**
+  - Verified login success, invalid password rejection, non-existent user handling, inactive user blocking.
+  - Verified `/me` profile endpoint with both Bearer header and HttpOnly cookie.
+  - Verified role-based authorization: operator access denied (403) on supervisor endpoint, supervisor allowed (200).
+  - Total test count expanded to 16 unit tests, all passing cleanly.
