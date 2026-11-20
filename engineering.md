@@ -329,3 +329,25 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] **Frontend Craft & Build Verification:**
   - Applied `unslop` and `ui-ux-pro-max` guidelines: quiet neutral chrome, 4px grid rhythm, high contrast ratios, zero emojis in structural controls, and responsive layouts.
   - `npm run type-check` (0 errors) and `npm run build` (all 8 static/dynamic routes compiled cleanly in 2.6s).
+
+### Phase 15: Frontend WebSocket Integration and Live Dashboard
+- [x] **Real-Time Client Architecture (`frontend/src/features/realtime/websocket-context.tsx`):**
+  - Engineered `WebSocketProvider` and `useWebSocket()` hook connecting automatically to `/api/v1/ws/service-requests` with authenticated token.
+  - Built connection lifecycle management (`connecting`, `connected`, `reconnecting`, `disconnected`).
+  - Implemented 30-second ping/pong keepalive heartbeat.
+  - Implemented exponential backoff reconnection protocol (1s, 2s, 4s, 8s, up to 30s ceiling) handling network or server interruptions.
+  - **Auto-Reconnection State Rehydration:** On reconnect, automatically invalidates TanStack Query caches to re-sync any state transitions that occurred while offline.
+- [x] **Surgical TanStack Query Cache Updates:**
+  - On receiving `service_request.progress_updated` or `status_changed`:
+    - Surgically updates individual request cache (`requestKeys.detail(id)`) without triggering network requests.
+    - Surgically updates list queries (`requestKeys.lists()`) in place, animating progress bars in real-time.
+    - Synchronizes counts and state transitions on `created`, `completed`, `failed`, and `cancelled` events.
+- [x] **Live Real-Time Operations Dashboard (`frontend/src/app/dashboard/page.tsx`):**
+  - Metric cards computing queued, in-processing, completed, and failed counts dynamically.
+  - **Active Background Workloads Card:** Live progress stream showing in-flight Celery requests with animated progress bars that advance in real-time as workers execute.
+  - **Live Event Stream Panel:** Real-time chronological audit feed showing incoming WebSocket event envelopes as they are broadcasted.
+- [x] **Live Connection Beacon (`frontend/src/components/layout/navbar.tsx`):**
+  - Integrated live sync status beacon reflecting actual socket state (Live Sync, Reconnecting, Connecting, Standby).
+- [x] **Production Verification:**
+  - `npm run type-check` (0 errors) and `npm run build` (all 8 routes compiled cleanly in 2.2s).
+  - All 30 backend unit tests passing cleanly.

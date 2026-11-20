@@ -18,26 +18,23 @@ This document tracks the phased implementation of ServiceFlow.
 - [x] **Phase 12:** Frontend Foundation and Design System
 - [x] **Phase 13:** Login, Session Handling and Role-Aware Navigation
 - [x] **Phase 14:** Request Creation, List, Detail and Cancellation UI
-- [ ] **Phase 15:** Frontend WebSocket Integration and Live Dashboard
+- [x] **Phase 15:** Frontend WebSocket Integration and Live Dashboard
 - [ ] **Phase 16:** Integration, Security and Failure Handling
 - [ ] **Phase 17:** Verification and Acceptance Testing
 - [ ] **Phase 18:** Documentation and Submission Readiness
 
 ---
 
-## Current Status: Phase 14 Complete
+## Current Status: Phase 15 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Requirements Specification:** `docs/requirements.md` approved.
 * **Technical Contracts & Architecture:** `docs/architecture.md`, `docs/api.md`, `docs/websocket-events.md` established.
-* **Backend Engine:** Complete REST API, Celery background worker concurrency, and WebSocket pub/sub stream.
-* **Frontend Application Features:**
-  - Authentication: `AuthProvider`, Zod-validated `LoginForm`, `/login`, and `ProtectedRoute`.
-  - Service Requests:
-    * `/requests/new`: Form with live character counters and preset scenarios.
-    * `/requests`: Paginated queue list with debounced search, status filter pills, and table/card presentation.
-    * `/requests/[id]`: Detailed view with animated execution progress bar, current step, failure alert, and timestamps.
-    * `CancelDialog`: Accessible confirmation modal with atomic cancellation protection.
-  - UI Craftsmanship: Adheres to `unslop` and `ui-ux-pro-max` guidelines (quiet neutral chrome, 4px grid rhythm, zero emoji clutter, semantic status tokens).
-  - Production build: `npm run build` compiled 8 routes with 0 errors.
+* **Backend Core Engine:** FastAPI REST, Celery workers, Redis Pub/Sub, and PostgreSQL models active.
+* **Frontend Real-Time & Live Dashboard:**
+  - `WebSocketProvider` and `useWebSocket` hook with exponential backoff and auto-reconnection state re-hydration.
+  - Surgical TanStack Query cache synchronization upon incoming WebSocket events.
+  - Dynamic `Navbar` connection status beacon (Live Sync, Reconnecting, Connecting, Standby).
+  - Live Dashboard featuring dynamic metric counters, in-flight background workloads with moving progress bars, and live event audit stream.
+  - Production build: `npm run build` compiled 8 routes in 2.2s with 0 errors.
 * **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.

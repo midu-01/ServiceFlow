@@ -18,7 +18,7 @@ export default function RootLayout({
       <body className="antialiased">
         <Providers>
           <div className="min-h-screen flex flex-col">
-            <Navbar isWsConnected={false} />
+            <Navbar />
 
             <main className="flex-1 container mx-auto px-6 py-8">
               {children}

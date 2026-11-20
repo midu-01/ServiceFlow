@@ -6,15 +6,13 @@ import { LogOut, PlusCircle, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/hooks/use-auth";
+import { useWebSocket } from "@/hooks/use-websocket";
 import { cn } from "@/lib/utils";
 
-interface NavbarProps {
-  isWsConnected?: boolean;
-}
-
-export function Navbar({ isWsConnected = false }: NavbarProps) {
+export function Navbar() {
   const pathname = usePathname();
   const { user: currentUser, logout } = useAuth();
+  const { status: wsStatus } = useWebSocket();
 
   const isOperator = currentUser?.role === "OPERATOR";
   const requestsLabel = isOperator ? "My Requests" : "All Requests";
@@ -23,6 +21,33 @@ export function Navbar({ isWsConnected = false }: NavbarProps) {
     { href: "/dashboard", label: "Dashboard" },
     { href: "/requests", label: requestsLabel },
   ];
+
+  const wsBadgeConfig = {
+    connected: {
+      color: "text-emerald-500 animate-pulse",
+      text: "Live Sync",
+      title: "Real-time WebSocket stream active",
+    },
+    reconnecting: {
+      color: "text-amber-500 animate-pulse",
+      text: "Reconnecting...",
+      title: "Reconnecting to real-time stream",
+    },
+    connecting: {
+      color: "text-blue-500 animate-pulse",
+      text: "Connecting...",
+      title: "Establishing real-time connection",
+    },
+    disconnected: {
+      color: "text-slate-400",
+      text: "Standby",
+      title: "WebSocket disconnected (REST polling disabled)",
+    },
+  }[wsStatus] || {
+    color: "text-slate-400",
+    text: "Standby",
+    title: "WebSocket disconnected",
+  };
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-card/90 backdrop-blur-md">
@@ -70,16 +95,11 @@ export function Navbar({ isWsConnected = false }: NavbarProps) {
           {/* Real-time WebSocket connection beacon */}
           <div
             className="flex items-center gap-1.5 text-xs font-medium px-2.5 py-1 rounded-full border border-border"
-            title={isWsConnected ? "Live WebSocket connection active" : "Real-time stream offline"}
+            title={wsBadgeConfig.title}
           >
-            <Radio
-              className={cn(
-                "h-3.5 w-3.5",
-                isWsConnected ? "text-emerald-500 animate-pulse" : "text-slate-400"
-              )}
-            />
+            <Radio className={cn("h-3.5 w-3.5", wsBadgeConfig.color)} />
             <span className="hidden sm:inline text-xs opacity-75">
-              {isWsConnected ? "Live Sync" : "Standby"}
+              {wsBadgeConfig.text}
             </span>
           </div>
 
