@@ -118,3 +118,26 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] **Environment Configuration Baseline:**
   - Consolidated root `.env.example` defining all application, database, broker, security, and port settings.
   - Validated compose syntax and variable resolution with `docker compose config`.
+
+### Phase 6: Database Design and Migrations
+- [x] **SQLAlchemy 2.0 Async ORM Models (`backend/app/db/models/`):**
+  - Designed `User` entity (`users` table) with UUID primary key, unique constraints on `username` and `email`, index on `role`, and cascading one-to-many relationship with `ServiceRequest`.
+  - Designed `ServiceRequest` entity (`service_requests` table) with:
+    - UUID primary key, required `title` ($\le 100$) and `description` ($\le 1000$).
+    - `status` enum (`QUEUED`, `PROCESSING`, `COMPLETED`, `FAILED`, `CANCELLED`) with database-level check constraint.
+    - `progress_percent` with check constraint enforcing $0 \le \text{progress} \le 100$.
+    - Foreign key relationship to `users.id` with `ON DELETE CASCADE`.
+    - Lifecycle timestamps: `created_at`, `updated_at`, `started_at`, `completed_at`, `cancelled_at`.
+- [x] **Relational Indexing Architecture:**
+  - `idx_service_requests_status`: Speeds up queue state queries.
+  - `idx_service_requests_created_by_id`: Scopes queries for operator self-service.
+  - `idx_service_requests_created_at_desc`: Accelerates default chronological dashboard listings.
+  - Composite `idx_service_requests_creator_status`: Enhances compound filtering on creator + status.
+- [x] **Alembic Version-Controlled Migrations (`backend/alembic/`):**
+  - Initialized Alembic with async driver template (`asyncpg`).
+  - Dynamically linked `alembic/env.py` to `settings.DATABASE_URL` and `Base.metadata`.
+  - Authored reversible initial schema revision `0001_initial_schema.py` (`upgrade` and `downgrade`).
+  - Validated offline SQL generation (`alembic upgrade --sql base:0001_initial_schema`).
+- [x] **Automated Testing (`backend/tests/unit/test_models.py`):**
+  - Tested table metadata registration and async database persistence with in-memory SQLite (`aiosqlite`).
+  - Verified relationship back-population and foreign key integrity.

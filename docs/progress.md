@@ -9,7 +9,7 @@ This document tracks the phased implementation of ServiceFlow.
 - [x] **Phase 3:** Architecture and Technical Contracts
 - [x] **Phase 4:** Frontend and Backend Project Skeletons
 - [x] **Phase 5:** Docker Compose and Local Infrastructure
-- [ ] **Phase 6:** Database Design and Migrations
+- [x] **Phase 6:** Database Design and Migrations
 - [ ] **Phase 7:** Backend Core, Configuration and Error Handling
 - [ ] **Phase 8:** JWT Authentication and Role-Based Access Control
 - [ ] **Phase 9:** Service Request REST API
@@ -25,15 +25,15 @@ This document tracks the phased implementation of ServiceFlow.
 
 ---
 
-## Current Status: Phase 5 Complete
+## Current Status: Phase 6 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Requirements Specification:** `docs/requirements.md` approved.
 * **Technical Contracts & Architecture:** `docs/architecture.md`, `docs/api.md`, `docs/websocket-events.md` established.
 * **Backend & Frontend Skeletons:** Implemented, compiled, and unit tested.
-* **Infrastructure & Containerization:**
-  - `backend/Dockerfile` and `frontend/Dockerfile` authored with non-root security.
-  - `docker-compose.yml` declaring 5 services (`postgres`, `redis`, `api`, `worker`, `frontend`) with active health check dependency gating.
-  - Root `.env.example` consolidating environment variables.
-  - Configuration validated using `docker compose config`.
+* **Infrastructure & Containerization:** Docker Compose and Dockerfiles validated.
+* **Database Models & Migrations:**
+  - `User` and `ServiceRequest` SQLAlchemy 2.0 async models implemented with check constraints and indexing.
+  - Alembic async environment and initial migration (`0001_initial_schema.py`) created.
+  - Offline SQL DDL emission and in-memory async SQLite unit tests passing.
 * **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.
