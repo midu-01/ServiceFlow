@@ -37,7 +37,7 @@ class ServiceRequestService:
         # Dispatch Celery background task
         try:
             from app.workers.tasks.request_tasks import process_service_request
-            process_service_request.delay(request_id=str(sr.id))
+            process_service_request.apply_async(args=[str(sr.id)], retry=False)
             logger.info(f"Dispatched Celery task for service request id={sr.id}")
         except Exception as exc:
             # If Celery broker is temporarily offline during unit test or dev, log warning gracefully

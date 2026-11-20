@@ -16,6 +16,13 @@ celery_app.conf.update(
     worker_prefetch_multiplier=1,
     task_acks_late=True,
     worker_concurrency=settings.CELERY_WORKER_CONCURRENCY,
+    broker_connection_retry_on_startup=False,
+    broker_connection_timeout=1.0,
+    broker_transport_options={
+        "max_retries": 1,
+        "socket_timeout": 1.0,
+        "socket_connect_timeout": 1.0,
+    },
 )
 
 celery_app.autodiscover_tasks(["app.workers.tasks"])

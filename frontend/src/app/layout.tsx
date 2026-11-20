@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Navbar } from "@/components/layout/navbar";
+import { ErrorBoundary } from "@/components/ui/error-boundary";
 import { Providers } from "./providers";
 import "./globals.css";
 
@@ -21,7 +22,7 @@ export default function RootLayout({
             <Navbar />
 
             <main className="flex-1 container mx-auto px-6 py-8">
-              {children}
+              <ErrorBoundary>{children}</ErrorBoundary>
             </main>
 
             <footer className="border-t border-border px-6 py-4 text-center text-xs opacity-60">
