@@ -20,4 +20,4 @@ ServiceFlow addresses operational bottlenecks in manual service request manageme
 
 ## Documentation
 
-- [Engineering Journal & Interview Notes](engineering.md)
+- [Engineering Journal](engineering.md)
