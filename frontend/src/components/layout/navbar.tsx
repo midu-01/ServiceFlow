@@ -2,26 +2,26 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LogOut, PlusCircle, Radio, UserCheck } from "lucide-react";
+import { LogOut, PlusCircle, Radio } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useAuth } from "@/hooks/use-auth";
 import { cn } from "@/lib/utils";
 
 interface NavbarProps {
-  currentUser?: {
-    username: string;
-    role: "ADMIN" | "SUPERVISOR" | "OPERATOR";
-  } | null;
-  onLogout?: () => void;
   isWsConnected?: boolean;
 }
 
-export function Navbar({ currentUser, onLogout, isWsConnected = false }: NavbarProps) {
+export function Navbar({ isWsConnected = false }: NavbarProps) {
   const pathname = usePathname();
+  const { user: currentUser, logout } = useAuth();
+
+  const isOperator = currentUser?.role === "OPERATOR";
+  const requestsLabel = isOperator ? "My Requests" : "All Requests";
 
   const navLinks = [
     { href: "/dashboard", label: "Dashboard" },
-    { href: "/requests", label: "Service Requests" },
+    { href: "/requests", label: requestsLabel },
   ];
 
   return (
@@ -41,7 +41,7 @@ export function Navbar({ currentUser, onLogout, isWsConnected = false }: NavbarP
             </div>
           </Link>
 
-          {/* Navigation Links */}
+          {/* Role-Aware Navigation Links */}
           {currentUser && (
             <nav className="hidden md:flex items-center gap-1">
               {navLinks.map((link) => {
@@ -79,7 +79,7 @@ export function Navbar({ currentUser, onLogout, isWsConnected = false }: NavbarP
               )}
             />
             <span className="hidden sm:inline text-xs opacity-75">
-              {isWsConnected ? "Live Sync" : "Connecting..."}
+              {isWsConnected ? "Live Sync" : "Standby"}
             </span>
           </div>
 
@@ -107,18 +107,16 @@ export function Navbar({ currentUser, onLogout, isWsConnected = false }: NavbarP
               </div>
 
               {/* Logout Button */}
-              {onLogout && (
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={onLogout}
-                  title="Sign out of ServiceFlow"
-                  className="text-muted-foreground hover:text-rose-600"
-                >
-                  <LogOut className="h-4 w-4" />
-                  <span className="sr-only">Sign out</span>
-                </Button>
-              )}
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => logout()}
+                title="Sign out of ServiceFlow"
+                className="text-muted-foreground hover:text-rose-600"
+              >
+                <LogOut className="h-4 w-4" />
+                <span className="sr-only">Sign out</span>
+              </Button>
             </>
           ) : (
             <Link href="/login">

@@ -278,3 +278,24 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
   - Centralized hierarchical query keys for auth (`authKeys`) and service requests (`requestKeys.all`, `requestKeys.list(filters)`, `requestKeys.detail(id)`).
 - [x] **Static Compilation & Type Verification:**
   - Verified Next.js 15 production build (`next build`) and strict TypeScript checks (`tsc --noEmit`) with 0 errors.
+
+### Phase 13: Login, Session Handling and Role-Aware Navigation
+- [x] **Client Authentication Context (`frontend/src/features/auth/auth-context.tsx`):**
+  - Built `AuthProvider` and `useAuth()` hook integrating TanStack Query for session caching (`authKeys.me()`).
+  - Automatic session hydration: checks token existence and validates current user session via `GET /api/v1/auth/me`.
+  - Seamless login/logout mutation: updates cache optimistically and clears stored credentials on logout.
+- [x] **Validated Login Form (`frontend/src/features/auth/login-form.tsx`):**
+  - Integrated `react-hook-form` and `zod` for real-time client-side validation.
+  - Server-side error handling displaying non-blocking alert banner upon invalid credentials.
+  - Built quick demo credential shortcuts ("Operator", "Supervisor", "Admin") for smooth interview and evaluation flows.
+- [x] **Login View (`frontend/src/app/login/page.tsx`):**
+  - Designed clean, centered card-based authentication page with responsive layout.
+- [x] **Role-Aware Route Protection (`frontend/src/components/auth/protected-route.tsx`):**
+  - Gated protected routes redirecting unauthenticated users to `/login`.
+  - Enforced optional role-based route blocking with user feedback.
+- [x] **Operational Dashboard (`frontend/src/app/dashboard/page.tsx`):**
+  - Built greeting panel displaying user's role and quick access cards to Service Requests and New Request submission.
+  - Connected `Navbar` dynamically to `useAuth()` displaying role-aware navigation ("My Requests" for Operator vs "All Requests" for Supervisor/Admin).
+- [x] **Production Build Verification:**
+  - `npm run type-check` (0 errors).
+  - `npm run build` generated static routes for `/login` and `/dashboard` cleanly in 2.6s.

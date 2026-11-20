@@ -16,8 +16,7 @@ This document tracks the phased implementation of ServiceFlow.
 - [x] **Phase 10:** Background Processing and Concurrency with Celery
 - [x] **Phase 11:** Redis Pub/Sub and Native WebSocket Communication
 - [x] **Phase 12:** Frontend Foundation and Design System
-- [ ] **Phase 13:** Login, Session Handling and Role-Aware Navigation
-- [ ] **Phase 13:** Login, Session Handling and Role-Aware Navigation
+- [x] **Phase 13:** Login, Session Handling and Role-Aware Navigation
 - [ ] **Phase 14:** Request Creation, List, Detail and Cancellation UI
 - [ ] **Phase 15:** Frontend WebSocket Integration and Live Dashboard
 - [ ] **Phase 16:** Integration, Security and Failure Handling
@@ -26,19 +25,17 @@ This document tracks the phased implementation of ServiceFlow.
 
 ---
 
-## Current Status: Phase 12 Complete
+## Current Status: Phase 13 Complete
 
 * **Repository:** Initialized and connected to GitHub.
 * **Requirements Specification:** `docs/requirements.md` approved.
 * **Technical Contracts & Architecture:** `docs/architecture.md`, `docs/api.md`, `docs/websocket-events.md` established.
-* **Backend Core & Database:** Models, migrations, repositories, and error handlers active.
-* **Authentication & RBAC:** Argon2id, JWT, and role protection active.
-* **Service Request REST API:** CRUD, filtering, pagination, and atomic cancellation active.
-* **Background Worker & Concurrency:** Celery multi-step processing and concurrency active.
-* **Real-Time WebSockets & Redis Pub/Sub:** Full-duplex WebSocket stream with server-side role filtering active.
-* **Frontend Design System:**
-  - Accessible UI component suite: `Button`, `Input`, `Textarea`, `Card`, `Badge`, `StatusBadge`, `Progress`, `Alert`, `Dialog`.
-  - Brand header and role-aware navigation bar (`Navbar`).
-  - TanStack Query key factory (`authKeys`, `requestKeys`).
-  - TypeScript type check (`tsc --noEmit`) and Next.js production build (`next build`) passing with 0 errors.
+* **Backend Core, Concurrency & Real-Time:** Full backend operational (REST API, Celery worker pool, WebSockets).
+* **Frontend Design System & Authentication:**
+  - `AuthProvider` and `useAuth` hook with TanStack Query session hydration.
+  - Zod-validated `LoginForm` with demo credential shortcuts.
+  - Centered responsive `/login` route.
+  - Route protection wrapper `ProtectedRoute` and authenticated `/dashboard` view.
+  - Role-aware `Navbar` navigation.
+  - Build verified with 0 errors (`npm run build`).
 * **Documentation:** `README.md`, `engineering.md`, and `docs/progress.md` updated.
