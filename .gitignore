@@ -57,6 +57,9 @@ htmlcov/
 .idea/
 *.swp
 *.swo
+*.tmp
+*.bak
+.copilot/
 
 # Docker
 docker-compose.override.yml

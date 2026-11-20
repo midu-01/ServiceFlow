@@ -69,3 +69,14 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] Specified testable functional requirements (`REQ-001` through `REQ-012`) with explicit Given-When-Then acceptance criteria.
 - [x] Defined measurable non-functional targets (`NFR-001` through `NFR-007`) for latency ($< 100\text{ ms}$ REST, $< 250\text{ ms}$ WS event distribution), concurrency, reliability, and security.
 - [x] Created a full Requirements Traceability Matrix mapping each requirement to its delivery phase.
+
+### Phase 3: Architecture & Technical Contracts
+- [x] Authored `docs/architecture.md` detailing system topology, component boundaries, and asynchronous execution pipeline.
+- [x] Engineered decoupled messaging architecture using Redis:
+  - **DB 0** allocated as Celery task queue broker.
+  - **DB 1** allocated as dedicated real-time event Pub/Sub transport.
+- [x] Specified worker concurrency rules: `worker_prefetch_multiplier = 1` for fair dispatch and `acks_late = True` for crash resilience.
+- [x] Formulated relational data model with PostgreSQL ERD, explicit B-tree indexing on `(created_by_id, status)` and `created_at DESC`.
+- [x] Authored `docs/api.md` establishing REST conventions, semantic HTTP status codes, standard response envelopes (`data`, `meta`, `error`), and complete schema contracts for Auth, Service Requests, and Health probes.
+- [x] Authored `docs/websocket-events.md` standardizing real-time event envelope (`event_id`, `event_type`, `occurred_at`, `request_id`, `data`), 6-event catalog, ping/pong keepalive, and client auto-reconnection state rehydration.
+- [x] Verified and reinforced `.gitignore` to prevent any internal configuration or scratch files from being exposed on GitHub.
