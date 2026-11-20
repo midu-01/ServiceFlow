@@ -80,3 +80,21 @@ To ensure responsiveness, fault-tolerance, and real-time streaming, I selected a
 - [x] Authored `docs/api.md` establishing REST conventions, semantic HTTP status codes, standard response envelopes (`data`, `meta`, `error`), and complete schema contracts for Auth, Service Requests, and Health probes.
 - [x] Authored `docs/websocket-events.md` standardizing real-time event envelope (`event_id`, `event_type`, `occurred_at`, `request_id`, `data`), 6-event catalog, ping/pong keepalive, and client auto-reconnection state rehydration.
 - [x] Verified and reinforced `.gitignore` to prevent any internal configuration or scratch files from being exposed on GitHub.
+
+### Phase 4: Frontend and Backend Project Skeletons
+- [x] **Backend Architecture Scaffolded (FastAPI + Python 3.12):**
+  - Designed clean layered modular structure: `core/`, `api/v1/endpoints/`, `db/models/`, `schemas/`, `services/`, `repositories/`, `workers/`, `realtime/`.
+  - Configured environment-driven configuration via `pydantic-settings` with validated defaults.
+  - Implemented structured logging format (`app/core/logging.py`) with date/time, log levels, and line numbers.
+  - Established unified error handling hierarchy (`AppError`, `NotFoundError`, `ConflictError`, `UnauthorizedError`, `ForbiddenError`) mapping directly to HTTP semantic status codes and standard JSON error envelopes.
+  - Built root liveness (`GET /health`) and readiness (`GET /ready`) probes verifying PostgreSQL and Redis dependencies.
+  - Configured Celery worker application configuration (`worker_prefetch_multiplier=1`, `acks_late=True`, `CELERY_WORKER_CONCURRENCY`).
+  - Implemented asynchronous Redis Pub/Sub listener lifespan task in `app/main.py`.
+  - Authored automated tests in `backend/tests/unit/test_health.py` and validated passing test suite.
+- [x] **Frontend Architecture Scaffolded (Next.js 15 App Router + TypeScript):**
+  - Initialized Next.js with TypeScript, React 19, and Tailwind CSS.
+  - Configured `tsconfig.json` with `@/*` path aliases.
+  - Configured TanStack Query provider (`Providers`) for surgical cache mutation on WebSocket events.
+  - Engineered strongly-typed client API abstraction (`frontend/src/lib/api/client.ts`) with custom `ApiClientError` and automated bearer token injection.
+  - Built responsive base layout (`frontend/src/app/layout.tsx`) and operational verification view (`frontend/src/app/page.tsx`).
+  - Verified static compilation with `next build` and strict type checks with `tsc --noEmit` (zero errors).
